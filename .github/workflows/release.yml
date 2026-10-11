@@ -49,12 +49,13 @@ jobs:
           # MimicAPI.dll inside thunderstore/ overwrites the DLL of this build, and the release
           # then carries old code under a new version. That happened up to 0.4.0.
           if [ -d "thunderstore" ]; then
-            cp -r thunderstore/* release/ 2>/dev/null || true
+            cp -r thunderstore/* release/
             # Update version in manifest.json if it exists
             if [ -f "release/manifest.json" ]; then
               sed -i "s/\"version_number\": \".*\"/\"version_number\": \"${{ steps.extract-version.outputs.version }}\"/" release/manifest.json
             fi
           fi
+          cp LICENSE CHANGELOG.md release/
           cp MimicAPI/bin/Release/netstandard2.1/MimicAPI.dll release/
           ls -la release/
       - name: Create release ZIP
@@ -64,6 +65,18 @@ jobs:
         with:
           name: MimicAPI
           path: "MimicAPI_${{ steps.extract-version.outputs.version }}.zip"
+      - name: Prepare Nexus bundle
+        run: |
+          mkdir -p nexus/Mods
+          cp MimicAPI/bin/Release/netstandard2.1/MimicAPI.dll nexus/Mods/
+          cp README.md LICENSE CHANGELOG.md nexus/
+          (cd nexus && zip -r "../MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip" .)
+          unzip -t "MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip"
+      - name: Upload Nexus ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: MimicAPI-nexus
+          path: "MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip"
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -77,10 +90,34 @@ jobs:
           mkdir -p release
           unzip -q "MimicAPI_${{ needs.build.outputs.version }}.zip" -d release/
           ls -la release/
+      - name: Download Nexus bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: MimicAPI-nexus
+      - name: Checkout release notes
+        uses: actions/checkout@v4
+        with:
+          path: source
+      - name: Extract release notes
+        id: changelog
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          SECTION=$(awk -v v="$VERSION" 'index($0,"## ["v"]")==1{grab=1;next} index($0,"## [")==1{if(grab)exit} grab{print}' source/CHANGELOG.md)
+          if [ -z "$SECTION" ]; then echo "::error::Missing changelog for $VERSION"; exit 1; fi
+          {
+            echo "notes<<CHANGELOG_EOF"
+            echo "$SECTION"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release/MimicAPI.dll
+          files: |
+            release/MimicAPI.dll
+            MimicAPI_${{ needs.build.outputs.version }}.zip
+            MimicAPI_${{ needs.build.outputs.version }}_nexus.zip
+          body: ${{ steps.changelog.outputs.notes }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   thunderstore:

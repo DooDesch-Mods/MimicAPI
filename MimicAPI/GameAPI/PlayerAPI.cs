@@ -107,17 +107,7 @@ namespace MimicAPI.GameAPI
 
         public static bool IsPlayerAlive(ProtoActor? actor)
         {
-            if (actor == null)
-                return false;
-            var statManager = GetStatManager(actor);
-            if (statManager == null)
-                return false;
-            // KNOWN PRE-EXISTING ISSUE (not caused by the 2026-06-15 update): IsAliveStatus is defined on the
-            // server-side VCreature/VActor (and on StatManager._self), not on StatManager itself, so this lookup
-            // returns null and IsPlayerAlive currently always reports false. A correct fix needs client/server
-            // design judgment (e.g. derive liveness from StatManager.GetCurrentHP()); left as-is to avoid guessing.
-            var isAlive = ReflectionHelper.InvokeMethod(statManager, "IsAliveStatus");
-            return isAlive is bool result && result;
+            return actor != null && !actor.dead;
         }
 
         public static bool IsLocalPlayerAlive()

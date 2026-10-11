@@ -2,6 +2,40 @@
 
 A reflection / helper library for building MelonLoader mods for MIMESIS.
 
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/mimicapi](https://support.doodesch.de/mimicapi).
+
+This is the [DooDesch maintenance fork](https://github.com/DooDesch/MimicAPI) of
+[NeoMimicry/MimicAPI](https://github.com/NeoMimicry/MimicAPI). It keeps the
+`MimicAPI.dll` assembly name and public API used by existing mods.
+
+Version 0.4.2 is built against MIMESIS 0.3.2 and MelonLoader 0.7.3.
+
+## Installation
+
+Requires MIMESIS and MelonLoader 0.7.3. Install this library when a mod lists
+MimicAPI as a dependency. It has no standalone gameplay features or settings.
+
+1. Close MIMESIS.
+2. Extract the Nexus package into the MIMESIS game folder so the DLL is at
+   `MIMESIS/Mods/MimicAPI.dll`.
+3. Keep only one copy of `MimicAPI.dll` in the mod setup; replace an older copy
+   when updating.
+
+## Credits and license
+
+Original library: NeoMimicry, copyright 2025. Fork maintenance: DooDesch.
+Distributed under the [MIT license](LICENSE), including the original copyright
+and permission notice. This fork is maintained independently of NeoMimicry.
+
+## Known API limitations
+
+`GetCurrentRoom` returns the first playable server room, which can differ from
+the local player's room. `GetWaitingRoomMaxPlayers` and
+`GetMaintenanceRoomMaxPlayers` return the current member count.
+`GetStatManager` and `GetMovementController` do not resolve the plain server
+classes through Unity's component lookup. These inherited helpers are outside
+the two corrected paths in 0.4.2.
+
 ## Building
 
 The build resolves the MIMESIS and MelonLoader assemblies from a local game
