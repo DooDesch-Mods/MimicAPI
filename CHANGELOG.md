@@ -4,6 +4,17 @@ All changes to MimicAPI are in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and the project uses Semantic
 Versioning.
 
+## [0.4.2]
+
+### Fixed
+- Read the player alive state from the client actor's `dead` property instead of looking for a server method on a Unity component.
+- Read room currency through the inherited public property so derived room types return their actual balance.
+
+### Changed
+- Build the DooDesch maintenance fork against MIMESIS 0.3.2 references.
+- Include the original MIT license and fork attribution in the Nexus package.
+- Set the local build version to 0.4.2 while keeping the `MimicAPI` assembly and public API names.
+
 ## [0.4.1]
 
 ### Fixed

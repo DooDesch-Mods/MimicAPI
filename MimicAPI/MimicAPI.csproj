@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <!-- The tag gives the version. Without this the DLL always said 1.0.0, and no consumer
-             could tell two builds apart. -->
-        <Version Condition="'$(Version)' == ''">0.0.0-dev</Version>
+        <Version>0.4.2</Version>
+        <Authors>DooDesch; NeoMimicry</Authors>
+        <Description>DooDesch maintenance fork of the MIT-licensed NeoMimicry MimicAPI library for MIMESIS.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/DooDesch/MimicAPI</RepositoryUrl>
         <Nullable>enable</Nullable>
         <WarningLevel>4</WarningLevel>
         <NoWarn>$(NoWarn);MSB3277;MSB3270;MSB3245</NoWarn>
