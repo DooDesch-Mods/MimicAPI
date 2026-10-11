@@ -124,7 +124,7 @@ namespace MimicAPI.GameAPI
             return ReflectionHelper.GetFieldValue(room, "_levelObjects") as IDictionary;
         }
 
-        public static int GetRoomCurrency(object? room) => room == null ? 0 : ReflectionHelper.GetFieldValue<int>(room, "<Currency>k__BackingField");
+        public static int GetRoomCurrency(object? room) => room == null ? 0 : ReflectionHelper.GetPropertyValue<int>(room, "Currency");
 
         public static long GetContaRecoveryRate(object? room) => room == null ? 0L : (ReflectionHelper.InvokeMethod(room, "GetContaRecoveryRate") is long v ? v : 0L);
 
