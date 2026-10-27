@@ -1,152 +1,43 @@
 name: Build and Release on Tag
+
 on:
   push:
-    tags:
-      - "*.*"
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Verify packages or repair an existing release
+        type: choice
+        options: [verify, nexus, requirements]
+        default: verify
+      version:
+        description: Version X.Y.Z (blank uses the latest changelog section for verify)
+        type: string
+        required: false
+      existing_file_uid:
+        description: Existing Nexus version UID for requirements repair
+        type: string
+        required: false
+
 permissions:
   contents: write
-  packages: write
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.extract-version.outputs.version }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Checkout Workspace repository
-        uses: actions/checkout@v4
-        with:
-          # Named, not derived: the owner of this fork is DooDesch, but the Workspace repository
-          # lives in the organisation. A derived name points at a repository that does not exist.
-          repository: DooDesch-Mods/Mimesis-Workspace
-          path: Workspace
-          ssh-key: ${{ secrets.WORKSPACE_TOKEN }}
-      - name: Extract version (remove v prefix)
-        id: extract-version
-        run: |
-          TAG="${{ github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-      - name: Build the project
-        run: >
-          dotnet build "MimicAPI/MimicAPI.csproj" --configuration Release
-          /p:Version="${{ steps.extract-version.outputs.version }}"
-          /p:WorkspaceLibPath="${{ github.workspace }}/Workspace/lib"
-          /p:GameManagedPath="${{ github.workspace }}/Workspace/lib/game"
-          /p:GameAssemblyPath="${{ github.workspace }}/Workspace/lib/game"
-          /p:MelonLoaderPath="${{ github.workspace }}/Workspace/lib/melonloader"
-      - name: Prepare release directory
-        run: |
-          mkdir -p release
-          # The metadata comes first and the built DLL last. In the other order a file named
-          # MimicAPI.dll inside thunderstore/ overwrites the DLL of this build, and the release
-          # then carries old code under a new version. That happened up to 0.4.0.
-          if [ -d "thunderstore" ]; then
-            cp -r thunderstore/* release/
-            # Update version in manifest.json if it exists
-            if [ -f "release/manifest.json" ]; then
-              sed -i "s/\"version_number\": \".*\"/\"version_number\": \"${{ steps.extract-version.outputs.version }}\"/" release/manifest.json
-            fi
-          fi
-          cp LICENSE CHANGELOG.md release/
-          cp MimicAPI/bin/Release/netstandard2.1/MimicAPI.dll release/
-          ls -la release/
-      - name: Create release ZIP
-        run: zip -j "MimicAPI_${{ steps.extract-version.outputs.version }}.zip" release/*
-      - name: Upload Release ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: MimicAPI
-          path: "MimicAPI_${{ steps.extract-version.outputs.version }}.zip"
-      - name: Prepare Nexus bundle
-        run: |
-          mkdir -p nexus/Mods
-          cp MimicAPI/bin/Release/netstandard2.1/MimicAPI.dll nexus/Mods/
-          cp README.md LICENSE CHANGELOG.md nexus/
-          (cd nexus && zip -r "../MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip" .)
-          unzip -t "MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip"
-      - name: Upload Nexus ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: MimicAPI-nexus
-          path: "MimicAPI_${{ steps.extract-version.outputs.version }}_nexus.zip"
   release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download built ZIP
-        uses: actions/download-artifact@v4
-        with:
-          name: MimicAPI
-      - name: Extract DLL from ZIP
-        run: |
-          mkdir -p release
-          unzip -q "MimicAPI_${{ needs.build.outputs.version }}.zip" -d release/
-          ls -la release/
-      - name: Download Nexus bundle
-        uses: actions/download-artifact@v4
-        with:
-          name: MimicAPI-nexus
-      - name: Checkout release notes
-        uses: actions/checkout@v4
-        with:
-          path: source
-      - name: Extract release notes
-        id: changelog
-        env:
-          VERSION: ${{ needs.build.outputs.version }}
-        run: |
-          SECTION=$(awk -v v="$VERSION" 'index($0,"## ["v"]")==1{grab=1;next} index($0,"## [")==1{if(grab)exit} grab{print}' source/CHANGELOG.md)
-          if [ -z "$SECTION" ]; then echo "::error::Missing changelog for $VERSION"; exit 1; fi
-          {
-            echo "notes<<CHANGELOG_EOF"
-            echo "$SECTION"
-            echo "CHANGELOG_EOF"
-          } >> "$GITHUB_OUTPUT"
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            release/MimicAPI.dll
-            MimicAPI_${{ needs.build.outputs.version }}.zip
-            MimicAPI_${{ needs.build.outputs.version }}_nexus.zip
-          body: ${{ steps.changelog.outputs.notes }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  thunderstore:
-    needs: build
-    # Only the upstream repository can publish this package. The namespace NeoMimicry belongs to
-    # the upstream owner, and a fork that tries it gets a red run and no package.
-    if: github.repository == 'NeoMimicry/MimicAPI'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Download built ZIP
-        uses: actions/download-artifact@v4
-        with:
-          name: MimicAPI
-      - name: Extract ZIP for Thunderstore
-        run: |
-          mkdir -p thunderstore-package
-          unzip -q "MimicAPI_${{ needs.build.outputs.version }}.zip" -d thunderstore-package/
-      - name: Upload to Thunderstore
-        uses: GreenTF/upload-thunderstore-package@v4.3
-        with:
-          token: ${{ secrets.THUNDERSTORE_TOKEN }}
-          community: mimesis
-          namespace: NeoMimicry
-          name: MimicAPI
-          description: Shared reflection layer over private MIMESIS internals.
-          version: ${{ needs.build.outputs.version }}
-          repo: mimesis.thunderstore.io
-          path: thunderstore-package
-          categories: |
-            Mods
+    uses: DooDesch-Mods/.github/.github/workflows/mimesis-release.yml@main
+    with:
+      project: MimicAPI/MimicAPI.csproj
+      assembly: MimicAPI
+      library: true
+      mimicapi: false
+      thunderstore: false
+      nexus: true
+      api_requirement: false
+      operation: ${{ github.event_name == 'push' && 'publish' || inputs.operation }}
+      version: ${{ inputs.version }}
+      existing_file_uid: ${{ inputs.existing_file_uid }}
+    secrets:
+      WORKSPACE_TOKEN: ${{ secrets.WORKSPACE_TOKEN }}
+      THUNDERSTORE_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
+      NEXUSMODS_API_KEY: ${{ secrets.NEXUSMODS_API_KEY }}
+      DISCORD_RELEASE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}

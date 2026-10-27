@@ -12,7 +12,7 @@ one copy in the mod setup. The library has no standalone gameplay features.
 
 Original library: NeoMimicry, copyright 2025. Fork maintenance: DooDesch.
 Licensed under MIT; the original copyright and permission notice are included
-in the package. Source: [DooDesch/MimicAPI](https://github.com/DooDesch/MimicAPI).
+in the package. Source: [DooDesch/MimicAPI](https://github.com/DooDesch-Mods/MimicAPI).
 
 ## Player and server helpers
 
