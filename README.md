@@ -4,7 +4,7 @@ A reflection / helper library for building MelonLoader mods for MIMESIS.
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/mimicapi](https://support.doodesch.de/mimicapi).
 
-This is the [DooDesch maintenance fork](https://github.com/DooDesch/MimicAPI) of
+This is the [DooDesch maintenance fork](https://github.com/DooDesch-Mods/MimicAPI) of
 [NeoMimicry/MimicAPI](https://github.com/NeoMimicry/MimicAPI). It keeps the
 `MimicAPI.dll` assembly name and public API used by existing mods.
 

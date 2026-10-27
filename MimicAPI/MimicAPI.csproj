@@ -5,7 +5,7 @@
         <Authors>DooDesch; NeoMimicry</Authors>
         <Description>DooDesch maintenance fork of the MIT-licensed NeoMimicry MimicAPI library for MIMESIS.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/DooDesch/MimicAPI</RepositoryUrl>
+        <RepositoryUrl>https://github.com/DooDesch-Mods/MimicAPI</RepositoryUrl>
         <Nullable>enable</Nullable>
         <WarningLevel>4</WarningLevel>
         <NoWarn>$(NoWarn);MSB3277;MSB3270;MSB3245</NoWarn>

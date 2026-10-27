@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: DooDesch-Mods/.github/.github/workflows/mimesis-build.yml@main
+    with:
+      project: MimicAPI/MimicAPI.csproj
+      assembly: MimicAPI
+      library: true
+      mimicapi: false
+      thunderstore: false
+      nexus: true
+      api_requirement: false
+    secrets:
+      WORKSPACE_TOKEN: ${{ secrets.WORKSPACE_TOKEN }}
