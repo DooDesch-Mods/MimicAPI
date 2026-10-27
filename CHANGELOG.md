@@ -4,6 +4,14 @@ All changes to MimicAPI are in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and the project uses Semantic
 Versioning.
 
+## [0.4.3] - 2026-10-27
+
+- Build against MIMESIS 0.4.0 while retaining existing public API signatures.
+- Resolve the local avatar and player lists from the current scene. Player lists exclude monsters and actors from other scenes.
+- Return the local avatar's actual server room instead of the first playable room.
+- Resolve StatManager and MovementController from the matching server actor. These server-only helpers return null on clients.
+- Return configured waiting and maintenance room capacity instead of current occupancy.
+
 ## [0.4.2]
 
 ### Fixed

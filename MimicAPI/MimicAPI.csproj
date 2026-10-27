@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>0.4.2</Version>
+        <Version>0.4.3</Version>
         <Authors>DooDesch; NeoMimicry</Authors>
         <Description>DooDesch maintenance fork of the MIT-licensed NeoMimicry MimicAPI library for MIMESIS.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
