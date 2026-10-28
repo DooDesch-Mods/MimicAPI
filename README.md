@@ -4,11 +4,21 @@ A reflection / helper library for building MelonLoader mods for MIMESIS.
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/mimicapi](https://support.doodesch.de/mimicapi).
 
+![MimicAPI in MIMESIS](https://raw.githubusercontent.com/DooDesch-Mods/MimicAPI/main/docs/img/header.jpg)
+
 This is the [DooDesch maintenance fork](https://github.com/DooDesch-Mods/MimicAPI) of
 [NeoMimicry/MimicAPI](https://github.com/NeoMimicry/MimicAPI). It keeps the
 `MimicAPI.dll` assembly name and public API used by existing mods.
 
 Version 0.4.3 is built against MIMESIS 0.4.0 and MelonLoader 0.7.3.
+
+## Screenshots
+
+Game context only. This project has no standalone gameplay feature.
+
+![Native MIMESIS maintenance scenery used as library context](https://raw.githubusercontent.com/DooDesch-Mods/MimicAPI/main/docs/img/game-context.jpg)
+
+Game context only. MimicAPI is a library and has no standalone visual gameplay feature.
 
 ## Installation
 

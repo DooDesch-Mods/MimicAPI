@@ -2,6 +2,8 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/mimicapi](https://support.doodesch.de/mimicapi).
 
+![MimicAPI in MIMESIS](https://raw.githubusercontent.com/DooDesch-Mods/MimicAPI/main/docs/img/header.jpg)
+
 Shared library for MIMESIS mods. This is the DooDesch maintenance fork of
 [NeoMimicry/MimicAPI](https://github.com/NeoMimicry/MimicAPI).
 
@@ -21,3 +23,12 @@ excluding monsters and actors left over from other scenes. `GetCurrentRoom`,
 `GetStatManager` and `GetMovementController` resolve the matching server actor.
 They return `null` on clients and in the menu. The waiting/maintenance capacity
 helpers return the configured limit, while member-count helpers return occupancy.
+
+
+## Screenshots
+
+Game context only. This project has no standalone gameplay feature.
+
+![Native MIMESIS maintenance scenery used as library context](https://raw.githubusercontent.com/DooDesch-Mods/MimicAPI/main/docs/img/game-context.jpg)
+
+Game context only. MimicAPI is a library and has no standalone visual gameplay feature.
